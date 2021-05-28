@@ -49,49 +49,45 @@ int M = 0;
 //                          PROTOTIPOS FUNCIONES 
 //------------------------------------------------------------------------------
 void setup(void); 
+void ant1(void);
+void ant2(void);
+void ant3(void);
+
 // Se establece el vector de interrupcion
 void __interrupt() isr(void){
     
     if (PIR1bits.ADIF == 1)//Interrupcion del ADC 
     {
-        if (ADCON0bits.CHS == 1)//si se esta en este canal que haga lo siguiente
+        if (ADCON0bits.CHS == 0)//si se esta en este canal que haga lo siguiente
         {
-            ADCON0bits.CHS = 0;//Se cambia el valor del canal
-            CCPR2L = (ADRESH>>1) + 125; //Valores disponibles de 125 a 250
-            CCP2CONbits.DC2B1 = ADRESH & 0b01;
-            CCP2CONbits.DC2B0 = (ADRESL>>7); // bits menos significativos
-        }                     
-        else {
-            ADCON0bits.CHS = 1;//Se cambia el valor de canal 
-            CCPR1L = (ADRESH>>1) + 125; //Valores disponibles de 125 a 250
-            CCP1CONbits.DC1B1 = ADRESH & 0b01;
-            CCP1CONbits.DC1B0 = (ADRESL>>7);// bits menos significativos
+           
+            if (PORTDbits.RD0 == 0)
+            {
+                //ant1();
+                CCPR1L = 0;
+                CCPR2L = ADRESH;
+               
+            }                     
+            else if (PORTDbits.RD1 == 0)
+            {
+                //ant2();
+                CCPR1L = ADRESH;
+                CCPR2L = 0;
+               
+            }  
+            else if(PORTDbits.RD2 == 0)
+            {
+                //ant3();
+                CCPR1L = 0;
+                CCPR2L = 0;
+          
+            }   
+        __delay_us(100);//tiempo necesario para el cambio de canal 
+        PIR1bits.ADIF = 0;//Se apaga el valor de la bandera de interrupcion ADC 
         }
-        __delay_us(50);//tiempo necesario para el cambio de canal 
-        PIR1bits.ADIF = 0;//Se apaga el valor de la bandera de interrupcion ADC
     }
-    
-    if (RBIF == 1)// Interrupcion por la bandera del puerto B
-    {
-        if (PORTBbits.RB0 == 0 && M == 0)
-        {
-            PORTEbits.RE0 = 1;
-            M = 1;
-        }                     
-        if (PORTBbits.RB1 == 0 && M == 0)
-        {
-            PORTEbits.RE1 = 1;
-            M = 1; 
-        }  
-        if (PORTBbits.RB2 == 0)
-        {
-            PORTEbits.RE0 = 0;
-            PORTEbits.RE1 = 0;
-            M = 0; 
-        }          
-        INTCONbits.RBIF = 0;// Se limpia la bandera de la interrupcion del 
-    }                       // puerto B
 }
+
 //------------------------------------------------------------------------------
 //                             CICLO PRINCIPAL 
 //------------------------------------------------------------------------------
@@ -109,18 +105,18 @@ void main(void) {
 //------------------------------------------------------------------------------
 void setup(void){
     // configuracion de puertos 
-    ANSEL = 0b00000011; //setea AN0 y AN1
+    ANSEL = 0b00000001; //setea AN0 y AN1
     ANSELH = 0X00;//se establecen los pines como entras y salidas digitales
     
     TRISA = 0xff; // Se pone todo el puerto A como entrada.
     TRISEbits.TRISE0 = 0;
     TRISEbits.TRISE1 = 0;
-    TRISBbits.TRISB0 = 1;
-    TRISBbits.TRISB1 = 1;
-    TRISBbits.TRISB2 = 1;//Se ponen como entradas los primeros pines del puertoB
+    TRISDbits.TRISD0 = 1;
+    TRISDbits.TRISD1 = 1;
+    TRISDbits.TRISD2 = 1;//Se ponen como entradas los primeros pines del puertoB
     
     PORTA = 0X00;
-    PORTB = 0X00;
+    PORTD = 0X00;
     PORTE = 0X00;
     PORTC = 0X00;//Se limpian los puertos utilizados
     
@@ -131,12 +127,12 @@ void setup(void){
     OSCCONbits.SCS = 1;
     
     // configuracion del timer 0 y pull-up internos
-
-    OPTION_REGbits.nRBPU = 0;
-    WPUB = 0b00000111;
-    IOCBbits.IOCB0 = 1;
-    IOCBbits.IOCB1 = 1;
-    IOCBbits.IOCB2 = 1;
+//
+//    OPTION_REGbits.nRBPU = 0;
+//    WPUB = 0b00000111;
+//    IOCBbits.IOCB0 = 1;
+//    IOCBbits.IOCB1 = 1;
+//    IOCBbits.IOCB2 = 1;
    
     // configuracion del ADC
   
@@ -177,9 +173,39 @@ void setup(void){
     
     // configuracion de interrupciones 
     INTCONbits.GIE = 1;
-    INTCONbits.RBIF = 1;//Bandera de interrupcion del puerto B
-    INTCONbits.RBIE = 1;//Permite las interrupciones del puerto B
     PIR1bits.ADIF = 0; // BANDERA de interrupcion del ADC
     PIE1bits.ADIE = 1; // Habilita la interrupcion del ADC
     INTCONbits.PEIE = 1; // Interrupcion de los perifericos
 }
+
+//void ant1(void)
+//{
+//    while(PORTBbits.RB0 == 0);
+//    __delay_ms(100){}
+//    return;
+//}
+//void ant2(void)
+//{
+//    while(PORTBbits.RB1 == 0);
+//    __delay_ms(100){}
+//    return;
+//}
+//void ant3(void)
+//{
+//    while(PORTBbits.RB2 == 0);
+//    __delay_ms(100){}
+//    return;
+//}
+
+
+//            ADCON0bits.CHS = 0;//Se cambia el valor del canal
+//            CCPR2L = (ADRESH>>1) + 125; //Valores disponibles de 125 a 250
+//            CCP2CONbits.DC2B1 = ADRESH & 0b01;
+//            CCP2CONbits.DC2B0 = (ADRESL>>7); // bits menos significativos
+//        }                     
+//        else {
+//            ADCON0bits.CHS = 1;//Se cambia el valor de canal 
+//            CCPR1L = (ADRESH>>1) + 125; //Valores disponibles de 125 a 250
+//            CCP1CONbits.DC1B1 = ADRESH & 0b01;
+//            CCP1CONbits.DC1B0 = (ADRESL>>7);// bits menos significativos
+//        }

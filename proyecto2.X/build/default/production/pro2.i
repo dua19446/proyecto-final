@@ -2673,49 +2673,45 @@ int M = 0;
 
 
 void setup(void);
+void ant1(void);
+void ant2(void);
+void ant3(void);
+
 
 void __attribute__((picinterrupt(("")))) isr(void){
 
     if (PIR1bits.ADIF == 1)
     {
-        if (ADCON0bits.CHS == 1)
+        if (ADCON0bits.CHS == 0)
         {
-            ADCON0bits.CHS = 0;
-            CCPR2L = (ADRESH>>1) + 125;
-            CCP2CONbits.DC2B1 = ADRESH & 0b01;
-            CCP2CONbits.DC2B0 = (ADRESL>>7);
-        }
-        else {
-            ADCON0bits.CHS = 1;
-            CCPR1L = (ADRESH>>1) + 125;
-            CCP1CONbits.DC1B1 = ADRESH & 0b01;
-            CCP1CONbits.DC1B0 = (ADRESL>>7);
-        }
-        _delay((unsigned long)((50)*(8000000/4000000.0)));
-        PIR1bits.ADIF = 0;
-    }
 
-    if (RBIF == 1)
-    {
-        if (PORTBbits.RB0 == 0 && M == 0)
-        {
-            PORTEbits.RE0 = 1;
-            M = 1;
+            if (PORTDbits.RD0 == 0)
+            {
+
+                CCPR1L = 0;
+                CCPR2L = ADRESH;
+
+            }
+            else if (PORTDbits.RD1 == 0)
+            {
+
+                CCPR1L = ADRESH;
+                CCPR2L = 0;
+
+            }
+            else if(PORTDbits.RD2 == 0)
+            {
+
+                CCPR1L = 0;
+                CCPR2L = 0;
+
+            }
+        _delay((unsigned long)((100)*(8000000/4000000.0)));
+        PIR1bits.ADIF = 0;
         }
-        if (PORTBbits.RB1 == 0 && M == 0)
-        {
-            PORTEbits.RE1 = 1;
-            M = 1;
-        }
-        if (PORTBbits.RB2 == 0)
-        {
-            PORTEbits.RE0 = 0;
-            PORTEbits.RE1 = 0;
-            M = 0;
-        }
-        INTCONbits.RBIF = 0;
     }
 }
+
 
 
 
@@ -2733,18 +2729,18 @@ void main(void) {
 
 void setup(void){
 
-    ANSEL = 0b00000011;
+    ANSEL = 0b00000001;
     ANSELH = 0X00;
 
     TRISA = 0xff;
     TRISEbits.TRISE0 = 0;
     TRISEbits.TRISE1 = 0;
-    TRISBbits.TRISB0 = 1;
-    TRISBbits.TRISB1 = 1;
-    TRISBbits.TRISB2 = 1;
+    TRISDbits.TRISD0 = 1;
+    TRISDbits.TRISD1 = 1;
+    TRISDbits.TRISD2 = 1;
 
     PORTA = 0X00;
-    PORTB = 0X00;
+    PORTD = 0X00;
     PORTE = 0X00;
     PORTC = 0X00;
 
@@ -2753,17 +2749,7 @@ void setup(void){
     OSCCONbits.IRCF1 = 1;
     OSCCONbits.IRCF0 = 1;
     OSCCONbits.SCS = 1;
-
-
-
-    OPTION_REGbits.nRBPU = 0;
-    WPUB = 0b00000111;
-    IOCBbits.IOCB0 = 1;
-    IOCBbits.IOCB1 = 1;
-    IOCBbits.IOCB2 = 1;
-
-
-
+# 139 "pro2.c"
     ADCON0bits.CHS = 0;
 
     ADCON0bits.ADCS1 = 1;
@@ -2801,8 +2787,6 @@ void setup(void){
 
 
     INTCONbits.GIE = 1;
-    INTCONbits.RBIF = 1;
-    INTCONbits.RBIE = 1;
     PIR1bits.ADIF = 0;
     PIE1bits.ADIE = 1;
     INTCONbits.PEIE = 1;
