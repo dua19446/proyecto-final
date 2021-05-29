@@ -11,14 +11,68 @@
 [v ___eecpymem __eecpymem `(v  1 e 1 0 ]
 "39
 [v ___memcpyee __memcpyee `(v  1 e 1 0 ]
-"57 C:\Users\duart\OneDrive\Documentos\GitHub\proyecto-final\proyecto2.X\pro2.c
+"78 C:\Users\duart\OneDrive\Documentos\GitHub\proyecto-final\proyecto2.X\pro2.c
 [v _isr isr `II(v  1 e 1 0 ]
-"94
+"209
 [v _main main `(v  1 e 1 0 ]
-"106
+"221
 [v _setup setup `(v  1 e 1 0 ]
+"298
+[v _servo1 servo1 `(v  1 e 1 0 ]
+"305
+[v _servo1_2 servo1_2 `(v  1 e 1 0 ]
+"312
+[v _servo1_3 servo1_3 `(v  1 e 1 0 ]
+"319
+[v _servo1_4 servo1_4 `(v  1 e 1 0 ]
+"326
+[v _servo1_5 servo1_5 `(v  1 e 1 0 ]
+"334
+[v _servo2 servo2 `(v  1 e 1 0 ]
+"341
+[v _servo2_2 servo2_2 `(v  1 e 1 0 ]
+"348
+[v _servo2_3 servo2_3 `(v  1 e 1 0 ]
+"355
+[v _servo2_4 servo2_4 `(v  1 e 1 0 ]
+"362
+[v _servo2_5 servo2_5 `(v  1 e 1 0 ]
+"370
+[v _servo3 servo3 `(v  1 e 1 0 ]
+"377
+[v _servo3_2 servo3_2 `(v  1 e 1 0 ]
+"384
+[v _servo3_3 servo3_3 `(v  1 e 1 0 ]
+"391
+[v _servo3_4 servo3_4 `(v  1 e 1 0 ]
+"398
+[v _servo3_5 servo3_5 `(v  1 e 1 0 ]
+"406
+[v _servo4 servo4 `(v  1 e 1 0 ]
+"413
+[v _servo4_2 servo4_2 `(v  1 e 1 0 ]
+"420
+[v _servo4_3 servo4_3 `(v  1 e 1 0 ]
+"427
+[v _servo4_4 servo4_4 `(v  1 e 1 0 ]
+"434
+[v _servo4_5 servo4_5 `(v  1 e 1 0 ]
 "166 C:/Program Files/Microchip/MPLABX/v5.45/packs/Microchip/PIC16Fxxx_DFP/1.2.33/xc8\pic\include\proc\pic16f887.h
 [v _PORTA PORTA `VEuc  1 e 1 @5 ]
+"228
+[v _PORTB PORTB `VEuc  1 e 1 @6 ]
+[s S457 . 1 `uc 1 RB0 1 0 :1:0 
+`uc 1 RB1 1 0 :1:1 
+`uc 1 RB2 1 0 :1:2 
+`uc 1 RB3 1 0 :1:3 
+`uc 1 RB4 1 0 :1:4 
+`uc 1 RB5 1 0 :1:5 
+`uc 1 RB6 1 0 :1:6 
+`uc 1 RB7 1 0 :1:7 
+]
+"245
+[u S466 . 1 `S457 1 . 1 0 ]
+[v _PORTBbits PORTBbits `VES466  1 e 1 @6 ]
 "290
 [v _PORTC PORTC `VEuc  1 e 1 @7 ]
 "352
@@ -35,9 +89,7 @@
 "369
 [u S96 . 1 `S87 1 . 1 0 ]
 [v _PORTDbits PORTDbits `VES96  1 e 1 @8 ]
-"414
-[v _PORTE PORTE `VEuc  1 e 1 @9 ]
-[s S318 . 1 `uc 1 RBIF 1 0 :1:0 
+[s S406 . 1 `uc 1 RBIF 1 0 :1:0 
 `uc 1 INTF 1 0 :1:1 
 `uc 1 T0IF 1 0 :1:2 
 `uc 1 RBIE 1 0 :1:3 
@@ -47,13 +99,13 @@
 `uc 1 GIE 1 0 :1:7 
 ]
 "482
-[s S327 . 1 `uc 1 . 1 0 :2:0 
+[s S415 . 1 `uc 1 . 1 0 :2:0 
 `uc 1 TMR0IF 1 0 :1:2 
 `uc 1 . 1 0 :2:3 
 `uc 1 TMR0IE 1 0 :1:5 
 ]
-[u S332 . 1 `S318 1 . 1 0 `S327 1 . 1 0 ]
-[v _INTCONbits INTCONbits `VES332  1 e 1 @11 ]
+[u S420 . 1 `S406 1 . 1 0 `S415 1 . 1 0 ]
+[v _INTCONbits INTCONbits `VES420  1 e 1 @11 ]
 [s S22 . 1 `uc 1 TMR1IF 1 0 :1:0 
 `uc 1 TMR2IF 1 0 :1:1 
 `uc 1 CCP1IF 1 0 :1:2 
@@ -65,12 +117,12 @@
 "553
 [u S30 . 1 `S22 1 . 1 0 ]
 [v _PIR1bits PIR1bits `VES30  1 e 1 @12 ]
-[s S290 . 1 `uc 1 T2CKPS 1 0 :2:0 
+[s S378 . 1 `uc 1 T2CKPS 1 0 :2:0 
 `uc 1 TMR2ON 1 0 :1:2 
 `uc 1 TOUTPS 1 0 :4:3 
 ]
 "793
-[s S294 . 1 `uc 1 T2CKPS0 1 0 :1:0 
+[s S382 . 1 `uc 1 T2CKPS0 1 0 :1:0 
 `uc 1 T2CKPS1 1 0 :1:1 
 `uc 1 . 1 0 :1:2 
 `uc 1 TOUTPS0 1 0 :1:3 
@@ -78,16 +130,16 @@
 `uc 1 TOUTPS2 1 0 :1:5 
 `uc 1 TOUTPS3 1 0 :1:6 
 ]
-[u S302 . 1 `S290 1 . 1 0 `S294 1 . 1 0 ]
-[v _T2CONbits T2CONbits `VES302  1 e 1 @18 ]
+[u S390 . 1 `S378 1 . 1 0 `S382 1 . 1 0 ]
+[v _T2CONbits T2CONbits `VES390  1 e 1 @18 ]
 "927
 [v _CCPR1L CCPR1L `VEuc  1 e 1 @21 ]
-[s S225 . 1 `uc 1 CCP1M 1 0 :4:0 
+[s S313 . 1 `uc 1 CCP1M 1 0 :4:0 
 `uc 1 DC1B 1 0 :2:4 
 `uc 1 P1M 1 0 :2:6 
 ]
 "968
-[s S229 . 1 `uc 1 CCP1M0 1 0 :1:0 
+[s S317 . 1 `uc 1 CCP1M0 1 0 :1:0 
 `uc 1 CCP1M1 1 0 :1:1 
 `uc 1 CCP1M2 1 0 :1:2 
 `uc 1 CCP1M3 1 0 :1:3 
@@ -96,28 +148,28 @@
 `uc 1 P1M0 1 0 :1:6 
 `uc 1 P1M1 1 0 :1:7 
 ]
-[s S238 . 1 `uc 1 . 1 0 :4:0 
+[s S326 . 1 `uc 1 . 1 0 :4:0 
 `uc 1 CCP1Y 1 0 :1:4 
 `uc 1 CCP1X 1 0 :1:5 
 ]
-[u S242 . 1 `S225 1 . 1 0 `S229 1 . 1 0 `S238 1 . 1 0 ]
-[v _CCP1CONbits CCP1CONbits `VES242  1 e 1 @23 ]
+[u S330 . 1 `S313 1 . 1 0 `S317 1 . 1 0 `S326 1 . 1 0 ]
+[v _CCP1CONbits CCP1CONbits `VES330  1 e 1 @23 ]
 "1154
 [v _CCPR2L CCPR2L `VEuc  1 e 1 @27 ]
-[s S264 . 1 `uc 1 CCP2M 1 0 :4:0 
+[s S352 . 1 `uc 1 CCP2M 1 0 :4:0 
 `uc 1 DC2B0 1 0 :1:4 
 `uc 1 DC2B1 1 0 :1:5 
 ]
 "1188
-[s S268 . 1 `uc 1 CCP2M0 1 0 :1:0 
+[s S356 . 1 `uc 1 CCP2M0 1 0 :1:0 
 `uc 1 CCP2M1 1 0 :1:1 
 `uc 1 CCP2M2 1 0 :1:2 
 `uc 1 CCP2M3 1 0 :1:3 
 `uc 1 CCP2Y 1 0 :1:4 
 `uc 1 CCP2X 1 0 :1:5 
 ]
-[u S275 . 1 `S264 1 . 1 0 `S268 1 . 1 0 ]
-[v _CCP2CONbits CCP2CONbits `VES275  1 e 1 @29 ]
+[u S363 . 1 `S352 1 . 1 0 `S356 1 . 1 0 ]
+[v _CCP2CONbits CCP2CONbits `VES363  1 e 1 @29 ]
 "1238
 [v _ADRESH ADRESH `VEuc  1 e 1 @30 ]
 [s S41 . 1 `uc 1 ADON 1 0 :1:0 
@@ -145,7 +197,19 @@
 [v _ADCON0bits ADCON0bits `VES61  1 e 1 @31 ]
 "1416
 [v _TRISA TRISA `VEuc  1 e 1 @133 ]
-[s S203 . 1 `uc 1 TRISC0 1 0 :1:0 
+[s S204 . 1 `uc 1 TRISB0 1 0 :1:0 
+`uc 1 TRISB1 1 0 :1:1 
+`uc 1 TRISB2 1 0 :1:2 
+`uc 1 TRISB3 1 0 :1:3 
+`uc 1 TRISB4 1 0 :1:4 
+`uc 1 TRISB5 1 0 :1:5 
+`uc 1 TRISB6 1 0 :1:6 
+`uc 1 TRISB7 1 0 :1:7 
+]
+"1495
+[u S213 . 1 `S204 1 . 1 0 ]
+[v _TRISBbits TRISBbits `VES213  1 e 1 @134 ]
+[s S291 . 1 `uc 1 TRISC0 1 0 :1:0 
 `uc 1 TRISC1 1 0 :1:1 
 `uc 1 TRISC2 1 0 :1:2 
 `uc 1 TRISC3 1 0 :1:3 
@@ -155,9 +219,9 @@
 `uc 1 TRISC7 1 0 :1:7 
 ]
 "1557
-[u S212 . 1 `S203 1 . 1 0 ]
-[v _TRISCbits TRISCbits `VES212  1 e 1 @135 ]
-[s S137 . 1 `uc 1 TRISD0 1 0 :1:0 
+[u S300 . 1 `S291 1 . 1 0 ]
+[v _TRISCbits TRISCbits `VES300  1 e 1 @135 ]
+[s S225 . 1 `uc 1 TRISD0 1 0 :1:0 
 `uc 1 TRISD1 1 0 :1:1 
 `uc 1 TRISD2 1 0 :1:2 
 `uc 1 TRISD3 1 0 :1:3 
@@ -167,17 +231,9 @@
 `uc 1 TRISD7 1 0 :1:7 
 ]
 "1619
-[u S146 . 1 `S137 1 . 1 0 ]
-[v _TRISDbits TRISDbits `VES146  1 e 1 @136 ]
-[s S124 . 1 `uc 1 TRISE0 1 0 :1:0 
-`uc 1 TRISE1 1 0 :1:1 
-`uc 1 TRISE2 1 0 :1:2 
-`uc 1 TRISE3 1 0 :1:3 
-]
-"1677
-[u S129 . 1 `S124 1 . 1 0 ]
-[v _TRISEbits TRISEbits `VES129  1 e 1 @137 ]
-[s S350 . 1 `uc 1 TMR1IE 1 0 :1:0 
+[u S234 . 1 `S225 1 . 1 0 ]
+[v _TRISDbits TRISDbits `VES234  1 e 1 @136 ]
+[s S438 . 1 `uc 1 TMR1IE 1 0 :1:0 
 `uc 1 TMR2IE 1 0 :1:1 
 `uc 1 CCP1IE 1 0 :1:2 
 `uc 1 SSPIE 1 0 :1:3 
@@ -186,49 +242,151 @@
 `uc 1 ADIE 1 0 :1:6 
 ]
 "1718
-[u S358 . 1 `S350 1 . 1 0 ]
-[v _PIE1bits PIE1bits `VES358  1 e 1 @140 ]
-[s S162 . 1 `uc 1 SCS 1 0 :1:0 
+[u S446 . 1 `S438 1 . 1 0 ]
+[v _PIE1bits PIE1bits `VES446  1 e 1 @140 ]
+[s S250 . 1 `uc 1 SCS 1 0 :1:0 
 `uc 1 LTS 1 0 :1:1 
 `uc 1 HTS 1 0 :1:2 
 `uc 1 OSTS 1 0 :1:3 
 `uc 1 IRCF 1 0 :3:4 
 ]
 "1882
-[s S168 . 1 `uc 1 . 1 0 :4:0 
+[s S256 . 1 `uc 1 . 1 0 :4:0 
 `uc 1 IRCF0 1 0 :1:4 
 `uc 1 IRCF1 1 0 :1:5 
 `uc 1 IRCF2 1 0 :1:6 
 ]
-[u S173 . 1 `S162 1 . 1 0 `S168 1 . 1 0 ]
-[v _OSCCONbits OSCCONbits `VES173  1 e 1 @143 ]
+[u S261 . 1 `S250 1 . 1 0 `S256 1 . 1 0 ]
+[v _OSCCONbits OSCCONbits `VES261  1 e 1 @143 ]
 "2041
 [v _PR2 PR2 `VEuc  1 e 1 @146 ]
-[s S188 . 1 `uc 1 . 1 0 :4:0 
+[s S276 . 1 `uc 1 . 1 0 :4:0 
 `uc 1 VCFG0 1 0 :1:4 
 `uc 1 VCFG1 1 0 :1:5 
 `uc 1 . 1 0 :1:6 
 `uc 1 ADFM 1 0 :1:7 
 ]
 "2991
-[u S194 . 1 `S188 1 . 1 0 ]
-[v _ADCON1bits ADCON1bits `VES194  1 e 1 @159 ]
+[u S282 . 1 `S276 1 . 1 0 ]
+[v _ADCON1bits ADCON1bits `VES282  1 e 1 @159 ]
 "3387
 [v _ANSEL ANSEL `VEuc  1 e 1 @392 ]
 "3449
 [v _ANSELH ANSELH `VEuc  1 e 1 @393 ]
-"94 C:\Users\duart\OneDrive\Documentos\GitHub\proyecto-final\proyecto2.X\pro2.c
+"46 C:\Users\duart\OneDrive\Documentos\GitHub\proyecto-final\proyecto2.X\pro2.c
+[v _M M `i  1 e 2 0 ]
+"209
 [v _main main `(v  1 e 1 0 ]
 {
-"102
+"217
 } 0
-"106
+"221
 [v _setup setup `(v  1 e 1 0 ]
 {
-"179
+"296
 } 0
-"57
+"78
 [v _isr isr `II(v  1 e 1 0 ]
 {
-"89
+"204
+} 0
+"434
+[v _servo4_5 servo4_5 `(v  1 e 1 0 ]
+{
+"440
+} 0
+"427
+[v _servo4_4 servo4_4 `(v  1 e 1 0 ]
+{
+"433
+} 0
+"420
+[v _servo4_3 servo4_3 `(v  1 e 1 0 ]
+{
+"426
+} 0
+"413
+[v _servo4_2 servo4_2 `(v  1 e 1 0 ]
+{
+"419
+} 0
+"406
+[v _servo4 servo4 `(v  1 e 1 0 ]
+{
+"412
+} 0
+"398
+[v _servo3_5 servo3_5 `(v  1 e 1 0 ]
+{
+"404
+} 0
+"391
+[v _servo3_4 servo3_4 `(v  1 e 1 0 ]
+{
+"397
+} 0
+"384
+[v _servo3_3 servo3_3 `(v  1 e 1 0 ]
+{
+"390
+} 0
+"377
+[v _servo3_2 servo3_2 `(v  1 e 1 0 ]
+{
+"383
+} 0
+"370
+[v _servo3 servo3 `(v  1 e 1 0 ]
+{
+"376
+} 0
+"362
+[v _servo2_5 servo2_5 `(v  1 e 1 0 ]
+{
+"368
+} 0
+"355
+[v _servo2_4 servo2_4 `(v  1 e 1 0 ]
+{
+"361
+} 0
+"348
+[v _servo2_3 servo2_3 `(v  1 e 1 0 ]
+{
+"354
+} 0
+"341
+[v _servo2_2 servo2_2 `(v  1 e 1 0 ]
+{
+"347
+} 0
+"334
+[v _servo2 servo2 `(v  1 e 1 0 ]
+{
+"340
+} 0
+"326
+[v _servo1_5 servo1_5 `(v  1 e 1 0 ]
+{
+"332
+} 0
+"319
+[v _servo1_4 servo1_4 `(v  1 e 1 0 ]
+{
+"325
+} 0
+"312
+[v _servo1_3 servo1_3 `(v  1 e 1 0 ]
+{
+"318
+} 0
+"305
+[v _servo1_2 servo1_2 `(v  1 e 1 0 ]
+{
+"311
+} 0
+"298
+[v _servo1 servo1 `(v  1 e 1 0 ]
+{
+"304
 } 0

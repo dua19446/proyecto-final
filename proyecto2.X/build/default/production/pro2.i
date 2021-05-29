@@ -2673,9 +2673,30 @@ int M = 0;
 
 
 void setup(void);
-void ant1(void);
-void ant2(void);
-void ant3(void);
+
+void servo1(void);
+void servo1_2(void);
+void servo1_3(void);
+void servo1_4(void);
+void servo1_5(void);
+
+void servo2(void);
+void servo2_2(void);
+void servo2_3(void);
+void servo2_4(void);
+void servo2_5(void);
+
+void servo3(void);
+void servo3_2(void);
+void servo3_3(void);
+void servo3_4(void);
+void servo3_5(void);
+
+void servo4(void);
+void servo4_2(void);
+void servo4_3(void);
+void servo4_4(void);
+void servo4_5(void);
 
 
 void __attribute__((picinterrupt(("")))) isr(void){
@@ -2684,31 +2705,125 @@ void __attribute__((picinterrupt(("")))) isr(void){
     {
         if (ADCON0bits.CHS == 0)
         {
-
+            ADCON0bits.CHS = 1;
             if (PORTDbits.RD0 == 0)
             {
-
                 CCPR1L = 0;
                 CCPR2L = ADRESH;
-
             }
             else if (PORTDbits.RD1 == 0)
             {
-
                 CCPR1L = ADRESH;
                 CCPR2L = 0;
-
             }
             else if(PORTDbits.RD2 == 0)
             {
-
                 CCPR1L = 0;
                 CCPR2L = 0;
-
             }
-        _delay((unsigned long)((100)*(8000000/4000000.0)));
-        PIR1bits.ADIF = 0;
         }
+        else if (ADCON0bits.CHS == 1)
+        {
+            M = ADRESH;
+            ADCON0bits.CHS = 2;
+            if(M<=50)
+            {
+               servo1();
+            }
+            if((M<=101)&&(M>=51))
+            {
+               servo1_2();
+            }
+            if((M<=152)&&(M>=102))
+            {
+               servo1_3();
+            }
+            if((M<=203)&&(M>=153))
+            {
+               servo1_4();
+            }
+            if(M>=204)
+            {
+               servo1_5();
+            }
+        }
+        else if (ADCON0bits.CHS == 2)
+        {
+            M = ADRESH;
+            ADCON0bits.CHS = 3;
+            if(M<=50)
+            {
+               servo2();
+            }
+            if((M<=101)&&(M>=51))
+            {
+               servo2_2();
+            }
+            if((M<=152)&&(M>=102))
+            {
+               servo2_3();
+            }
+            if((M<=203)&&(M>=153))
+            {
+               servo2_4();
+            }
+            if(M>=204)
+            {
+               servo2_5();
+            }
+        }
+        else if (ADCON0bits.CHS == 3)
+        {
+            M = ADRESH;
+            ADCON0bits.CHS = 4;
+            if(M<=50)
+            {
+               servo3();
+            }
+            if((M<=101)&&(M>=51))
+            {
+               servo3_2();
+            }
+            if((M<=152)&&(M>=102))
+            {
+               servo3_3();
+            }
+            if((M<=203)&&(M>=153))
+            {
+               servo3_4();
+            }
+            if(M>=204)
+            {
+               servo3_5();
+            }
+        }
+        else if (ADCON0bits.CHS == 4)
+        {
+            M = ADRESH;
+            ADCON0bits.CHS = 0;
+            if(M<=50)
+            {
+               servo4();
+            }
+            if((M<=101)&&(M>=51))
+            {
+               servo4_2();
+            }
+            if((M<=152)&&(M>=102))
+            {
+               servo4_3();
+            }
+            if((M<=203)&&(M>=153))
+            {
+               servo4_4();
+            }
+            if(M>=204)
+            {
+               servo4_5();
+            }
+        }
+        _delay((unsigned long)((50)*(8000000/4000000.0)));
+        PIR1bits.ADIF = 0;
     }
 }
 
@@ -2722,26 +2837,28 @@ void main(void) {
     while (1)
     {
             ADCON0bits.GO = 1;
-    }
+}
 }
 
 
 
 void setup(void){
 
-    ANSEL = 0b00000001;
+    ANSEL = 0b00011111;
     ANSELH = 0X00;
 
     TRISA = 0xff;
-    TRISEbits.TRISE0 = 0;
-    TRISEbits.TRISE1 = 0;
+    TRISBbits.TRISB0 = 0;
+    TRISBbits.TRISB1 = 0;
+    TRISBbits.TRISB2 = 0;
+    TRISBbits.TRISB3 = 0;
     TRISDbits.TRISD0 = 1;
     TRISDbits.TRISD1 = 1;
     TRISDbits.TRISD2 = 1;
 
     PORTA = 0X00;
     PORTD = 0X00;
-    PORTE = 0X00;
+    PORTB = 0X00;
     PORTC = 0X00;
 
 
@@ -2749,7 +2866,7 @@ void setup(void){
     OSCCONbits.IRCF1 = 1;
     OSCCONbits.IRCF0 = 1;
     OSCCONbits.SCS = 1;
-# 139 "pro2.c"
+# 256 "pro2.c"
     ADCON0bits.CHS = 0;
 
     ADCON0bits.ADCS1 = 1;
@@ -2790,4 +2907,148 @@ void setup(void){
     PIR1bits.ADIF = 0;
     PIE1bits.ADIE = 1;
     INTCONbits.PEIE = 1;
+}
+
+void servo1(void)
+{
+            PORTBbits.RB0 = 1;
+            _delay((unsigned long)((0.7)*(8000000/4000.0)));
+            PORTBbits.RB0 = 0;
+            _delay((unsigned long)((19.3)*(8000000/4000.0)));
+}
+void servo1_2(void)
+{
+            PORTBbits.RB0 = 1;
+            _delay((unsigned long)((1.25)*(8000000/4000.0)));
+            PORTBbits.RB0 = 0;
+            _delay((unsigned long)((18.75)*(8000000/4000.0)));
+}
+void servo1_3(void)
+{
+            PORTBbits.RB0 = 1;
+            _delay((unsigned long)((1.5)*(8000000/4000.0)));
+            PORTBbits.RB0 = 0;
+            _delay((unsigned long)((18.5)*(8000000/4000.0)));
+}
+void servo1_4(void)
+{
+            PORTBbits.RB0 = 1;
+            _delay((unsigned long)((1.75)*(8000000/4000.0)));
+            PORTBbits.RB0 = 0;
+            _delay((unsigned long)((18.25)*(8000000/4000.0)));
+}
+void servo1_5(void)
+{
+            PORTBbits.RB0 = 1;
+            _delay((unsigned long)((2)*(8000000/4000.0)));
+            PORTBbits.RB0 = 0;
+            _delay((unsigned long)((17)*(8000000/4000.0)));
+}
+
+void servo2(void)
+{
+            PORTBbits.RB1 = 1;
+            _delay((unsigned long)((0.7)*(8000000/4000.0)));
+            PORTBbits.RB1 = 0;
+            _delay((unsigned long)((19.3)*(8000000/4000.0)));
+}
+void servo2_2(void)
+{
+            PORTBbits.RB1 = 1;
+            _delay((unsigned long)((1.25)*(8000000/4000.0)));
+            PORTBbits.RB1 = 0;
+            _delay((unsigned long)((18.75)*(8000000/4000.0)));
+}
+void servo2_3(void)
+{
+            PORTBbits.RB1 = 1;
+            _delay((unsigned long)((1.5)*(8000000/4000.0)));
+            PORTBbits.RB1 = 0;
+            _delay((unsigned long)((18.5)*(8000000/4000.0)));
+}
+void servo2_4(void)
+{
+            PORTBbits.RB1 = 1;
+            _delay((unsigned long)((1.75)*(8000000/4000.0)));
+            PORTBbits.RB1 = 0;
+            _delay((unsigned long)((18.25)*(8000000/4000.0)));
+}
+void servo2_5(void)
+{
+            PORTBbits.RB1 = 1;
+            _delay((unsigned long)((2)*(8000000/4000.0)));
+            PORTBbits.RB1 = 0;
+            _delay((unsigned long)((17)*(8000000/4000.0)));
+}
+
+void servo3(void)
+{
+            PORTBbits.RB2 = 1;
+            _delay((unsigned long)((0.7)*(8000000/4000.0)));
+            PORTBbits.RB2 = 0;
+            _delay((unsigned long)((19.3)*(8000000/4000.0)));
+}
+void servo3_2(void)
+{
+            PORTBbits.RB2 = 1;
+            _delay((unsigned long)((1.25)*(8000000/4000.0)));
+            PORTBbits.RB2 = 0;
+            _delay((unsigned long)((18.75)*(8000000/4000.0)));
+}
+void servo3_3(void)
+{
+            PORTBbits.RB2 = 1;
+            _delay((unsigned long)((1.5)*(8000000/4000.0)));
+            PORTBbits.RB2 = 0;
+            _delay((unsigned long)((18.5)*(8000000/4000.0)));
+}
+void servo3_4(void)
+{
+            PORTBbits.RB2 = 1;
+            _delay((unsigned long)((1.75)*(8000000/4000.0)));
+            PORTBbits.RB2 = 0;
+            _delay((unsigned long)((18.25)*(8000000/4000.0)));
+}
+void servo3_5(void)
+{
+            PORTBbits.RB2 = 1;
+            _delay((unsigned long)((2)*(8000000/4000.0)));
+            PORTBbits.RB2 = 0;
+            _delay((unsigned long)((17)*(8000000/4000.0)));
+}
+
+void servo4(void)
+{
+            PORTBbits.RB3 = 1;
+            _delay((unsigned long)((0.7)*(8000000/4000.0)));
+            PORTBbits.RB3 = 0;
+            _delay((unsigned long)((19.3)*(8000000/4000.0)));
+}
+void servo4_2(void)
+{
+            PORTBbits.RB3 = 1;
+            _delay((unsigned long)((1.25)*(8000000/4000.0)));
+            PORTBbits.RB3 = 0;
+            _delay((unsigned long)((18.75)*(8000000/4000.0)));
+}
+void servo4_3(void)
+{
+            PORTBbits.RB3 = 1;
+            _delay((unsigned long)((1.5)*(8000000/4000.0)));
+            PORTBbits.RB3 = 0;
+            _delay((unsigned long)((18.5)*(8000000/4000.0)));
+}
+void servo4_4(void)
+{
+            PORTBbits.RB3 = 1;
+            _delay((unsigned long)((1.75)*(8000000/4000.0)));
+            PORTBbits.RB3 = 0;
+            _delay((unsigned long)((18.25)*(8000000/4000.0)));
+}
+void servo4_5(void)
+{
+            PORTBbits.RB3 = 1;
+            _delay((unsigned long)((2)*(8000000/4000.0)));
+            PORTBbits.RB3 = 0;
+            _delay((unsigned long)((17)*(8000000/4000.0)));
 }

@@ -48,10 +48,31 @@ int M = 0;
 //------------------------------------------------------------------------------
 //                          PROTOTIPOS FUNCIONES 
 //------------------------------------------------------------------------------
-void setup(void); 
-void ant1(void);
-void ant2(void);
-void ant3(void);
+void setup(void); //configuraciones generales 
+// Servo para el movimiento de ojos para arriba y abajo
+void servo1(void);
+void servo1_2(void);
+void servo1_3(void);
+void servo1_4(void);
+void servo1_5(void);
+// Servo para el movimiento de ojos de izquierda a derecha
+void servo2(void);
+void servo2_2(void);
+void servo2_3(void);
+void servo2_4(void);
+void servo2_5(void);
+// Servo para para movimiento de la ceja 1
+void servo3(void);
+void servo3_2(void);
+void servo3_3(void);
+void servo3_4(void);
+void servo3_5(void);
+// Servo para para movimiento de la ceja 2
+void servo4(void);
+void servo4_2(void);
+void servo4_3(void);
+void servo4_4(void);
+void servo4_5(void);
 
 // Se establece el vector de interrupcion
 void __interrupt() isr(void){
@@ -60,31 +81,125 @@ void __interrupt() isr(void){
     {
         if (ADCON0bits.CHS == 0)//si se esta en este canal que haga lo siguiente
         {
-           
+            ADCON0bits.CHS = 1;
             if (PORTDbits.RD0 == 0)
             {
-                //ant1();
                 CCPR1L = 0;
                 CCPR2L = ADRESH;
-               
             }                     
             else if (PORTDbits.RD1 == 0)
             {
-                //ant2();
                 CCPR1L = ADRESH;
                 CCPR2L = 0;
-               
             }  
             else if(PORTDbits.RD2 == 0)
             {
-                //ant3();
                 CCPR1L = 0;
                 CCPR2L = 0;
-          
-            }   
-        __delay_us(100);//tiempo necesario para el cambio de canal 
-        PIR1bits.ADIF = 0;//Se apaga el valor de la bandera de interrupcion ADC 
+            }    
         }
+        else if (ADCON0bits.CHS == 1)
+        {
+            M = ADRESH;
+            ADCON0bits.CHS = 2;
+            if(M<=50)
+            {
+               servo1();
+            }
+            if((M<=101)&&(M>=51))
+            {
+               servo1_2();
+            }
+            if((M<=152)&&(M>=102))
+            {
+               servo1_3();
+            }
+            if((M<=203)&&(M>=153))
+            {
+               servo1_4();
+            }
+            if(M>=204)
+            {
+               servo1_5();
+            }
+        }
+        else if (ADCON0bits.CHS == 2)
+        {
+            M = ADRESH;
+            ADCON0bits.CHS = 3;
+            if(M<=50)
+            {
+               servo2();
+            }
+            if((M<=101)&&(M>=51))
+            {
+               servo2_2();
+            }
+            if((M<=152)&&(M>=102))
+            {
+               servo2_3();
+            }
+            if((M<=203)&&(M>=153))
+            {
+               servo2_4();
+            }
+            if(M>=204)
+            {
+               servo2_5();
+            }
+        }
+        else if (ADCON0bits.CHS == 3)
+        {
+            M = ADRESH;
+            ADCON0bits.CHS = 4;
+            if(M<=50)
+            {
+               servo3();
+            }
+            if((M<=101)&&(M>=51))
+            {
+               servo3_2();
+            }
+            if((M<=152)&&(M>=102))
+            {
+               servo3_3();
+            }
+            if((M<=203)&&(M>=153))
+            {
+               servo3_4();
+            }
+            if(M>=204)
+            {
+               servo3_5();
+            }
+        }
+        else if (ADCON0bits.CHS == 4)
+        {
+            M = ADRESH;
+            ADCON0bits.CHS = 0;
+            if(M<=50)
+            {
+               servo4();
+            }
+            if((M<=101)&&(M>=51))
+            {
+               servo4_2();
+            }
+            if((M<=152)&&(M>=102))
+            {
+               servo4_3();
+            }
+            if((M<=203)&&(M>=153))
+            {
+               servo4_4();
+            }
+            if(M>=204)
+            {
+               servo4_5();
+            }
+        }
+        __delay_us(50);//tiempo necesario para el cambio de canal 
+        PIR1bits.ADIF = 0;//Se apaga el valor de la bandera de interrupcion ADC
     }
 }
 
@@ -98,26 +213,28 @@ void main(void) {
     while (1) // Se implemta el loop
     {
             ADCON0bits.GO = 1; //para empezar de nuevo la ejecucion del ADC
-    }  
+}
 }
 //------------------------------------------------------------------------------
 //                             CONFIGURACIONES
 //------------------------------------------------------------------------------
 void setup(void){
     // configuracion de puertos 
-    ANSEL = 0b00000001; //setea AN0 y AN1
+    ANSEL = 0b00011111; //setea AN0 y AN1
     ANSELH = 0X00;//se establecen los pines como entras y salidas digitales
     
     TRISA = 0xff; // Se pone todo el puerto A como entrada.
-    TRISEbits.TRISE0 = 0;
-    TRISEbits.TRISE1 = 0;
+    TRISBbits.TRISB0 = 0;
+    TRISBbits.TRISB1 = 0;
+    TRISBbits.TRISB2 = 0;
+    TRISBbits.TRISB3 = 0;
     TRISDbits.TRISD0 = 1;
     TRISDbits.TRISD1 = 1;
     TRISDbits.TRISD2 = 1;//Se ponen como entradas los primeros pines del puertoB
     
     PORTA = 0X00;
     PORTD = 0X00;
-    PORTE = 0X00;
+    PORTB = 0X00;
     PORTC = 0X00;//Se limpian los puertos utilizados
     
     // configuracion del oscilador 
@@ -178,6 +295,149 @@ void setup(void){
     INTCONbits.PEIE = 1; // Interrupcion de los perifericos
 }
 
+void servo1(void)
+{
+            PORTBbits.RB0 = 1;
+            __delay_ms(0.7);
+            PORTBbits.RB0 = 0;
+            __delay_ms(19.3);
+}
+void servo1_2(void)
+{
+            PORTBbits.RB0 = 1;
+            __delay_ms(1.25);
+            PORTBbits.RB0 = 0;
+            __delay_ms(18.75);
+}
+void servo1_3(void)
+{
+            PORTBbits.RB0 = 1;
+            __delay_ms(1.5);
+            PORTBbits.RB0 = 0;
+            __delay_ms(18.5);
+}
+void servo1_4(void)
+{
+            PORTBbits.RB0 = 1;
+            __delay_ms(1.75);
+            PORTBbits.RB0 = 0;
+            __delay_ms(18.25);
+}
+void servo1_5(void)
+{
+            PORTBbits.RB0 = 1;
+            __delay_ms(2);
+            PORTBbits.RB0 = 0;
+            __delay_ms(17);
+}
+
+void servo2(void)
+{
+            PORTBbits.RB1 = 1;
+            __delay_ms(0.7);
+            PORTBbits.RB1 = 0;
+            __delay_ms(19.3);
+}
+void servo2_2(void)
+{
+            PORTBbits.RB1 = 1;
+            __delay_ms(1.25);
+            PORTBbits.RB1 = 0;
+            __delay_ms(18.75);
+}
+void servo2_3(void)
+{
+            PORTBbits.RB1 = 1;
+            __delay_ms(1.5);
+            PORTBbits.RB1 = 0;
+            __delay_ms(18.5);
+}
+void servo2_4(void)
+{
+            PORTBbits.RB1 = 1;
+            __delay_ms(1.75);
+            PORTBbits.RB1 = 0;
+            __delay_ms(18.25);
+}
+void servo2_5(void)
+{
+            PORTBbits.RB1 = 1;
+            __delay_ms(2);
+            PORTBbits.RB1 = 0;
+            __delay_ms(17);
+}
+
+void servo3(void)
+{
+            PORTBbits.RB2 = 1;
+            __delay_ms(0.7);
+            PORTBbits.RB2 = 0;
+            __delay_ms(19.3);
+}
+void servo3_2(void)
+{
+            PORTBbits.RB2 = 1;
+            __delay_ms(1.25);
+            PORTBbits.RB2 = 0;
+            __delay_ms(18.75);
+}
+void servo3_3(void)
+{
+            PORTBbits.RB2 = 1;
+            __delay_ms(1.5);
+            PORTBbits.RB2 = 0;
+            __delay_ms(18.5);
+}
+void servo3_4(void)
+{
+            PORTBbits.RB2 = 1;
+            __delay_ms(1.75);
+            PORTBbits.RB2 = 0;
+            __delay_ms(18.25);
+}
+void servo3_5(void)
+{
+            PORTBbits.RB2 = 1;
+            __delay_ms(2);
+            PORTBbits.RB2 = 0;
+            __delay_ms(17);
+}
+
+void servo4(void)
+{
+            PORTBbits.RB3 = 1;
+            __delay_ms(0.7);
+            PORTBbits.RB3 = 0;
+            __delay_ms(19.3);
+}
+void servo4_2(void)
+{
+            PORTBbits.RB3 = 1;
+            __delay_ms(1.25);
+            PORTBbits.RB3 = 0;
+            __delay_ms(18.75);
+}
+void servo4_3(void)
+{
+            PORTBbits.RB3 = 1;
+            __delay_ms(1.5);
+            PORTBbits.RB3 = 0;
+            __delay_ms(18.5);
+}
+void servo4_4(void)
+{
+            PORTBbits.RB3 = 1;
+            __delay_ms(1.75);
+            PORTBbits.RB3 = 0;
+            __delay_ms(18.25);
+}
+void servo4_5(void)
+{
+            PORTBbits.RB3 = 1;
+            __delay_ms(2);
+            PORTBbits.RB3 = 0;
+            __delay_ms(17);
+}
 //void ant1(void)
 //{
 //    while(PORTBbits.RB0 == 0);
@@ -196,16 +456,3 @@ void setup(void){
 //    __delay_ms(100){}
 //    return;
 //}
-
-
-//            ADCON0bits.CHS = 0;//Se cambia el valor del canal
-//            CCPR2L = (ADRESH>>1) + 125; //Valores disponibles de 125 a 250
-//            CCP2CONbits.DC2B1 = ADRESH & 0b01;
-//            CCP2CONbits.DC2B0 = (ADRESL>>7); // bits menos significativos
-//        }                     
-//        else {
-//            ADCON0bits.CHS = 1;//Se cambia el valor de canal 
-//            CCPR1L = (ADRESH>>1) + 125; //Valores disponibles de 125 a 250
-//            CCP1CONbits.DC1B1 = ADRESH & 0b01;
-//            CCP1CONbits.DC1B0 = (ADRESL>>7);// bits menos significativos
-//        }
