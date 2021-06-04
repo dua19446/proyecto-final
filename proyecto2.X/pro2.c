@@ -6,6 +6,7 @@
  */
 #include <xc.h>
 #include <stdint.h>
+#include <stdio.h>// Libreria para poder usar printf junto a la funcion putch.
 
 //------------------------------------------------------------------------------
 //                         BITS DE CONFIGURACION
@@ -25,7 +26,7 @@
 #pragma config BOREN = OFF      // Brown Out Reset Selection bits (BOR enabled)
 #pragma config IESO = OFF       // Internal External Switchover bit 
                                 //(Internal/External Switchover mode is enabled)
-#pragma config FCMEN = ON      // Fail-Safe Clock Monitor Enabled bit 
+#pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enabled bit 
                                 //(Fail-Safe Clock Monitor is enabled)
 #pragma config LVP = OFF        // Low Voltage Programming Enable bit (RB3/PGM 
                                 //pin has PGM function, low voltage programming 
@@ -43,8 +44,17 @@
 //                                VARIABLES
 //------------------------------------------------------------------------------
 
-int M = 0;
-
+char M = 0;
+char M1 = 0;
+char M2 = 0;
+char M3 = 0;
+char M4 = 0;
+char M5 = 0;
+char M6 = 0;
+char M7 = 0;
+char sentido;
+char sentido2;
+int uart;
 //------------------------------------------------------------------------------
 //                          PROTOTIPOS FUNCIONES 
 //------------------------------------------------------------------------------
@@ -73,6 +83,14 @@ void servo4_2(void);
 void servo4_3(void);
 void servo4_4(void);
 void servo4_5(void);
+// Para la ventana terminal 
+void menu(void);
+void putch(char data);
+void receptar(void);
+// para leer y escribir EEPROM
+char leer_eeprom(char direccion);
+void escribir_eeprom(char data, char direccion);
+void nuevo_bit_banging(void);
 
 // Se establece el vector de interrupcion
 void __interrupt() isr(void){
@@ -83,17 +101,20 @@ void __interrupt() isr(void){
         {
             ADCON0bits.CHS = 1;
             if (PORTDbits.RD0 == 0)
-            {
+            { 
+                sentido = 0b01; 
                 CCPR1L = 0;
-                CCPR2L = ADRESH;
+                CCPR2L = ADRESH/4;
             }                     
             else if (PORTDbits.RD1 == 0)
             {
-                CCPR1L = ADRESH;
+                sentido = 0b10; 
+                CCPR1L = ADRESH/4;
                 CCPR2L = 0;
             }  
             else if(PORTDbits.RD2 == 0)
             {
+                sentido = 0b00; 
                 CCPR1L = 0;
                 CCPR2L = 0;
             }    
@@ -125,75 +146,75 @@ void __interrupt() isr(void){
         }
         else if (ADCON0bits.CHS == 2)
         {
-            M = ADRESH;
+            M1 = ADRESH;
             ADCON0bits.CHS = 3;
-            if(M<=50)
+            if(M1<=50)
             {
                servo2();
             }
-            if((M<=101)&&(M>=51))
+            if((M1<=101)&&(M1>=51))
             {
                servo2_2();
             }
-            if((M<=152)&&(M>=102))
+            if((M1<=152)&&(M1>=102))
             {
                servo2_3();
             }
-            if((M<=203)&&(M>=153))
+            if((M1<=203)&&(M1>=153))
             {
                servo2_4();
             }
-            if(M>=204)
+            if(M1>=204)
             {
                servo2_5();
             }
         }
         else if (ADCON0bits.CHS == 3)
         {
-            M = ADRESH;
+            M2 = ADRESH;
             ADCON0bits.CHS = 4;
-            if(M<=50)
+            if(M2<=50)
             {
                servo3();
             }
-            if((M<=101)&&(M>=51))
+            if((M2<=101)&&(M2>=51))
             {
                servo3_2();
             }
-            if((M<=152)&&(M>=102))
+            if((M2<=152)&&(M2>=102))
             {
                servo3_3();
             }
-            if((M<=203)&&(M>=153))
+            if((M2<=203)&&(M2>=153))
             {
                servo3_4();
             }
-            if(M>=204)
+            if(M2>=204)
             {
                servo3_5();
             }
         }
         else if (ADCON0bits.CHS == 4)
         {
-            M = ADRESH;
+            M3 = ADRESH;
             ADCON0bits.CHS = 0;
-            if(M<=50)
+            if(M3<=50)
             {
                servo4();
             }
-            if((M<=101)&&(M>=51))
+            if((M3<=101)&&(M3>=51))
             {
                servo4_2();
             }
-            if((M<=152)&&(M>=102))
+            if((M3<=152)&&(M3>=102))
             {
                servo4_3();
             }
-            if((M<=203)&&(M>=153))
+            if((M3<=203)&&(M3>=153))
             {
                servo4_4();
             }
-            if(M>=204)
+            if(M3>=204)
             {
                servo4_5();
             }
@@ -201,6 +222,43 @@ void __interrupt() isr(void){
         __delay_us(50);//tiempo necesario para el cambio de canal 
         PIR1bits.ADIF = 0;//Se apaga el valor de la bandera de interrupcion ADC
     }
+    if (RBIF == 1)// Interrupcion por la bandera del puerto B
+    {
+        if (PORTBbits.RB4 == 0)
+        {
+            RE0 = 1;
+            escribir_eeprom(M, 0x14);
+            escribir_eeprom(M1, 0x15);
+            escribir_eeprom(M2, 0x16);
+            escribir_eeprom(M3, 0x17);
+            escribir_eeprom(sentido, 0x18);
+            __delay_ms(1000);
+            RE0 = 0;
+        }                     
+        if (PORTBbits.RB5 == 0)
+        {
+            RE1 = 1;
+            M4 = leer_eeprom(0x14);
+            M5 = leer_eeprom(0x15);
+            M6 = leer_eeprom(0x16);
+            M7 = leer_eeprom(0x17);
+            sentido2 = leer_eeprom(0x18);
+            nuevo_bit_banging();
+            __delay_ms(1000);
+            RE1 = 0;
+        }                     
+        if (PORTBbits.RB6 == 0)
+        {
+            RE2 = 1;
+            uart = 1;
+            while (uart == 1)
+            {
+            menu();//Se llama a la funcion menu para desplegar el menu de opciones
+            }
+            RE2 = 0;
+        }                     
+        INTCONbits.RBIF = 0;// Se limpia la bandera de la interrupcion del 
+    }                       // puerto B
 }
 
 //------------------------------------------------------------------------------
@@ -212,7 +270,7 @@ void main(void) {
             
     while (1) // Se implemta el loop
     {
-            ADCON0bits.GO = 1; //para empezar de nuevo la ejecucion del ADC
+        ADCON0bits.GO = 1; //para empezar de nuevo la ejecucion del ADC
 }
 }
 //------------------------------------------------------------------------------
@@ -227,14 +285,21 @@ void setup(void){
     TRISBbits.TRISB0 = 0;
     TRISBbits.TRISB1 = 0;
     TRISBbits.TRISB2 = 0;
-    TRISBbits.TRISB3 = 0;
+    TRISBbits.TRISB3 = 0;// para potenciometros
+    TRISBbits.TRISB4 = 1;
+    TRISBbits.TRISB5 = 1;
+    TRISBbits.TRISB6 = 1;// Se ponen como entradas para botones para estados.
     TRISDbits.TRISD0 = 1;
     TRISDbits.TRISD1 = 1;
     TRISDbits.TRISD2 = 1;//Se ponen como entradas los primeros pines del puertoB
+    TRISEbits.TRISE0 = 0;
+    TRISEbits.TRISE1 = 0;
+    TRISEbits.TRISE2 = 0;
     
     PORTA = 0X00;
     PORTD = 0X00;
     PORTB = 0X00;
+    PORTE = 0X00;
     PORTC = 0X00;//Se limpian los puertos utilizados
     
     // configuracion del oscilador 
@@ -243,13 +308,13 @@ void setup(void){
     OSCCONbits.IRCF0 = 1; //Se configura el oscilador a una frecuencia de 8 MHz
     OSCCONbits.SCS = 1;
     
-    // configuracion del timer 0 y pull-up internos
-//
-//    OPTION_REGbits.nRBPU = 0;
-//    WPUB = 0b00000111;
-//    IOCBbits.IOCB0 = 1;
-//    IOCBbits.IOCB1 = 1;
-//    IOCBbits.IOCB2 = 1;
+    // configuracion del pull-up internos
+
+    OPTION_REGbits.nRBPU = 0;
+    WPUB = 0b01110000;
+    IOCBbits.IOCB4 = 1;
+    IOCBbits.IOCB5 = 1;
+    IOCBbits.IOCB6 = 1;
    
     // configuracion del ADC
   
@@ -288,11 +353,28 @@ void setup(void){
     TRISCbits.TRISC2 = 0; //se pone como salida CCP1
     TRISCbits.TRISC1 = 0; //se pone como salida CCP2
     
+    //Configuracion TX y RX 
+    TXSTAbits.BRGH = 1;  // Para alta velocidad.
+    BAUDCTLbits.BRG16 = 1; // Se usan los 16 bits
+    
+    TXSTAbits.SYNC = 0; // transmision asincrona
+    RCSTAbits.SPEN = 1; // Se enciende el modulo 
+    RCSTAbits.CREN = 1; // Se abilita la recepcion 
+    
+    TXSTAbits.TXEN = 1; // Se abilita la transmision 
+    
+    RCSTAbits.RX9 = 0; // Se determina que no se quieren 9 bits
+    
+    SPBRG = 207; //BAUD RATE de 9600
+    SPBRGH = 0;
+    
     // configuracion de interrupciones 
     INTCONbits.GIE = 1;
     PIR1bits.ADIF = 0; // BANDERA de interrupcion del ADC
     PIE1bits.ADIE = 1; // Habilita la interrupcion del ADC
     INTCONbits.PEIE = 1; // Interrupcion de los perifericos
+    INTCONbits.RBIF = 1;
+    INTCONbits.RBIE = 1;
 }
 
 void servo1(void)
@@ -328,7 +410,7 @@ void servo1_5(void)
             PORTBbits.RB0 = 1;
             __delay_ms(2);
             PORTBbits.RB0 = 0;
-            __delay_ms(17);
+            __delay_ms(18);
 }
 
 void servo2(void)
@@ -364,7 +446,7 @@ void servo2_5(void)
             PORTBbits.RB1 = 1;
             __delay_ms(2);
             PORTBbits.RB1 = 0;
-            __delay_ms(17);
+            __delay_ms(18);
 }
 
 void servo3(void)
@@ -400,7 +482,7 @@ void servo3_5(void)
             PORTBbits.RB2 = 1;
             __delay_ms(2);
             PORTBbits.RB2 = 0;
-            __delay_ms(17);
+            __delay_ms(18);
 }
 
 void servo4(void)
@@ -436,23 +518,258 @@ void servo4_5(void)
             PORTBbits.RB3 = 1;
             __delay_ms(2);
             PORTBbits.RB3 = 0;
-            __delay_ms(17);
+            __delay_ms(18);
 }
-//void ant1(void)
-//{
-//    while(PORTBbits.RB0 == 0);
-//    __delay_ms(100){}
-//    return;
-//}
-//void ant2(void)
-//{
-//    while(PORTBbits.RB1 == 0);
-//    __delay_ms(100){}
-//    return;
-//}
-//void ant3(void)
-//{
-//    while(PORTBbits.RB2 == 0);
-//    __delay_ms(100){}
-//    return;
-//}
+char leer_eeprom(char direccion)
+{
+    EEADR = direccion;
+    EECON1bits.EEPGD = 0;
+    EECON1bits.RD = 1;
+    char data = EEDATA;
+    return data;
+}
+void escribir_eeprom(char data, char direccion)
+{
+    EEADR = direccion;
+    EEDAT = data;
+    
+    EECON1bits.EEPGD = 0;
+    EECON1bits.WREN = 1;
+    
+    INTCONbits.GIE = 0;
+    EECON2 = 0x55;
+    EECON2 = 0xAA;
+    
+    EECON1bits.WR = 1;
+    
+    while(PIR2bits.EEIF == 0);
+    PIR2bits.EEIF = 0;
+    
+    EECON1bits.WREN = 0;
+    INTCONbits.GIE = 0;
+}
+void nuevo_bit_banging(void)
+{
+    if(M4<=50)
+    {
+     servo1();
+    }
+    if((M4<=101)&&(M4>=51))
+    {
+     servo1_2();
+    }
+    if((M4<=152)&&(M4>=102))
+    {
+     servo1_3();
+    }
+    if((M4<=203)&&(M4>=153))
+    {
+     servo1_4();
+    }
+    if(M4>=204)
+    {
+     servo1_5();
+    }
+    
+    
+    if(M5<=50)
+    {
+     servo2();
+    }
+    if((M5<=101)&&(M5>=51))
+    {
+     servo2_2();
+    }
+    if((M5<=152)&&(M5>=102))
+    {
+     servo2_3();
+    }
+    if((M5<=203)&&(M5>=153))
+    {
+     servo2_4();
+    }
+    if(M5>=204)
+    {
+     servo2_5();
+    }
+    
+    if(M6<=50)
+    {
+     servo3();
+    }
+    if((M6<=101)&&(M6>=51))
+    {
+     servo3_2();
+    }
+    if((M6<=152)&&(M6>=102))
+    {
+     servo3_3();
+    }
+    if((M6<=203)&&(M6>=153))
+    {
+     servo3_4();
+    }
+    if(M6>=204)
+    {
+     servo3_5();
+    }
+    
+    
+    if(M7<=50)
+    {
+     servo4();
+    }
+    if((M7<=101)&&(M7>=51))
+    {
+     servo4_2();
+    }
+    if((M7<=152)&&(M7>=102))
+    {
+     servo4_3();
+    }
+    if((M7<=203)&&(M7>=153))
+    {
+     servo4_4();
+    }
+    if(M7>=204)
+    {
+     servo4_5();
+    }
+    
+    
+    if(sentido2 == 0b01)
+    {
+     CCPR1L = 0;
+     CCPR2L = ADRESH;   
+    }
+    if(sentido2 == 0b10)
+    {
+     CCPR1L = ADRESH;
+     CCPR2L = 0;   
+    }
+    if(sentido2 == 0b10)
+    {
+     CCPR1L = 0;
+     CCPR2L = 0;   
+    }
+}
+      
+void menu(void){
+     __delay_ms(50);
+     printf("\rQue accion desea ejecutar? \r");
+     __delay_ms(50);
+     printf("\r(1) MOVER OJOS \r");
+     __delay_ms(50);
+     printf("(2) MOVER CEJAS \r");
+     __delay_ms(50);
+     printf("(3) MOVER LENGUA \r");
+     __delay_ms(50);
+     printf("(4) Salir de UART \r");
+     while(RCIF == 0); //Se espera algo que recibir (CARACTER).
+//     char entregado = RCREG;//Se crea un variable local que equivale al registro 
+//                           // de recepcion para usarlo en las condicionales if.
+     if (RCREG == '1'){//si la opcion que se recibe es 1 se hace lo siguiente
+        __delay_ms(50);
+        printf("\r(a) Mover ojos a la izquierda. \r");//Se despliega la fila de
+                                                   //caracteres.
+        __delay_ms(50);
+        printf("(b) Mover ojos a la derecha. \r");
+        __delay_ms(50);
+        printf("(c) Mover ojos para arriba. \r");
+        __delay_ms(50);
+        printf("(d) Mover ojos para abajo. \r");
+        while(RCIF == 0);
+        if (RCREG == 'a')
+        {
+            servo2();
+        }
+        else if (RCREG == 'b')
+        {
+            servo2_5();
+        }
+        else if (RCREG == 'c')
+        {
+            servo1();
+        }
+        else if (RCREG == 'd')
+        {
+            servo1_5();
+        }
+    }                                             
+    if (RCREG == '2'){//si la opcion que se recibe es 2 se hace lo siguiente
+        __delay_ms(50);
+        printf("\r(e) Mover ceja 1. \r");
+        __delay_ms(50);
+        printf("(f) Mover ceja 2. \r");
+        while(RCIF == 0);//Se espera algo que recibir (CARACTER)elegido por 
+                         // el usuario.
+        if (RCREG == 'e')
+        {
+        __delay_ms(50);
+        printf("\r(6) Mover ceja para arriba. \r");
+        __delay_ms(50);
+        printf("(7) Mover ceja para abajo. \r");
+        while(RCIF == 0);
+        if(RCREG == '6')
+        {
+            servo3();
+        }
+        if(RCREG == '7')
+        {
+            servo3_5();
+        }
+        }
+        else if (RCREG == 'f')
+        {
+            __delay_ms(50);
+        printf("\r(8) Mover ceja para arriba. \r");
+        __delay_ms(50);
+        printf("(9) Mover ceja para abajo. \r");
+        while(RCIF == 0);
+        if(RCREG == '8')
+        {
+            servo4();
+        }
+        if(RCREG == '9')
+        {
+            servo4_5();
+        }
+        }
+    }
+    if (RCREG == '3'){//si la opcion que se recibe es 3 se hace lo siguiente
+        __delay_ms(50);
+        printf("\r(g) Desenrrollar. \r");
+        __delay_ms(50);
+        printf("(h) Enrrollar. \r");
+        __delay_ms(50);
+        printf("(i) Deter. \r");
+        while(RCIF == 0);//Se espera algo que recibir (CARACTER)elegido por 
+                         // el usuario.
+        if (RCREG == 'g')
+        {
+            CCPR1L = 0;
+            CCPR2L = ADRESH;
+        }
+        else if (RCREG == 'h')
+        {
+            CCPR1L = ADRESH;
+            CCPR2L = 0;
+        }
+        else if (RCREG == 'i')
+        {
+            CCPR1L = 0;
+            CCPR2L = 0;
+        }
+    }
+    if (RCREG == '4'){//si la opcion que se recibe es 3 se hace lo siguiente
+        uart = 0;
+        printf("\rHa salido del UART \r");
+        __delay_ms(50);
+    }
+}
+void putch(char info){//Se transmite la cadena de caracteres a esta funcion 
+                      // por el printf
+    while (TXIF == 0);// Se espera algo que haya que transmitir
+    TXREG = info;// lo que hay en data se pasa al registro de transmision para 
+                 // para que se depliegue en la terminal virtual.
+}

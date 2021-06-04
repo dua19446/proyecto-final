@@ -2630,6 +2630,105 @@ typedef int16_t intptr_t;
 typedef uint16_t uintptr_t;
 # 8 "pro2.c" 2
 
+# 1 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\stdio.h" 1 3
+
+
+
+# 1 "C:/Program Files/Microchip/MPLABX/v5.45/packs/Microchip/PIC16Fxxx_DFP/1.2.33/xc8\\pic\\include\\__size_t.h" 1 3
+
+
+
+typedef unsigned size_t;
+# 4 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\stdio.h" 2 3
+
+# 1 "C:/Program Files/Microchip/MPLABX/v5.45/packs/Microchip/PIC16Fxxx_DFP/1.2.33/xc8\\pic\\include\\__null.h" 1 3
+# 5 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\stdio.h" 2 3
+
+
+
+
+
+
+# 1 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\stdarg.h" 1 3
+
+
+
+
+
+
+typedef void * va_list[1];
+
+#pragma intrinsic(__va_start)
+extern void * __va_start(void);
+
+#pragma intrinsic(__va_arg)
+extern void * __va_arg(void *, ...);
+# 11 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\stdio.h" 2 3
+# 43 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\stdio.h" 3
+struct __prbuf
+{
+ char * ptr;
+ void (* func)(char);
+};
+# 85 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\stdio.h" 3
+# 1 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\conio.h" 1 3
+
+
+
+
+
+
+
+# 1 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\errno.h" 1 3
+# 29 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\errno.h" 3
+extern int errno;
+# 8 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\conio.h" 2 3
+
+
+
+
+extern void init_uart(void);
+
+extern char getch(void);
+extern char getche(void);
+extern void putch(char);
+extern void ungetch(char);
+
+extern __bit kbhit(void);
+
+
+
+extern char * cgets(char *);
+extern void cputs(const char *);
+# 85 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\stdio.h" 2 3
+
+
+
+extern int cprintf(char *, ...);
+#pragma printf_check(cprintf)
+
+
+
+extern int _doprnt(struct __prbuf *, const register char *, register va_list);
+# 180 "C:\\Program Files\\Microchip\\xc8\\v2.31\\pic\\include\\c90\\stdio.h" 3
+#pragma printf_check(vprintf) const
+#pragma printf_check(vsprintf) const
+
+extern char * gets(char *);
+extern int puts(const char *);
+extern int scanf(const char *, ...) __attribute__((unsupported("scanf() is not supported by this compiler")));
+extern int sscanf(const char *, const char *, ...) __attribute__((unsupported("sscanf() is not supported by this compiler")));
+extern int vprintf(const char *, va_list) __attribute__((unsupported("vprintf() is not supported by this compiler")));
+extern int vsprintf(char *, const char *, va_list) __attribute__((unsupported("vsprintf() is not supported by this compiler")));
+extern int vscanf(const char *, va_list ap) __attribute__((unsupported("vscanf() is not supported by this compiler")));
+extern int vsscanf(const char *, const char *, va_list) __attribute__((unsupported("vsscanf() is not supported by this compiler")));
+
+#pragma printf_check(printf) const
+#pragma printf_check(sprintf) const
+extern int sprintf(char *, const char *, ...);
+extern int printf(const char *, ...);
+# 9 "pro2.c" 2
+
 
 
 
@@ -2649,7 +2748,7 @@ typedef uint16_t uintptr_t;
 #pragma config BOREN = OFF
 #pragma config IESO = OFF
 
-#pragma config FCMEN = ON
+#pragma config FCMEN = OFF
 
 #pragma config LVP = OFF
 
@@ -2667,8 +2766,17 @@ typedef uint16_t uintptr_t;
 
 
 
-int M = 0;
-
+char M = 0;
+char M1 = 0;
+char M2 = 0;
+char M3 = 0;
+char M4 = 0;
+char M5 = 0;
+char M6 = 0;
+char M7 = 0;
+char sentido;
+char sentido2;
+int uart;
 
 
 
@@ -2698,6 +2806,14 @@ void servo4_3(void);
 void servo4_4(void);
 void servo4_5(void);
 
+void menu(void);
+void putch(char data);
+void receptar(void);
+
+char leer_eeprom(char direccion);
+void escribir_eeprom(char data, char direccion);
+void nuevo_bit_banging(void);
+
 
 void __attribute__((picinterrupt(("")))) isr(void){
 
@@ -2708,16 +2824,19 @@ void __attribute__((picinterrupt(("")))) isr(void){
             ADCON0bits.CHS = 1;
             if (PORTDbits.RD0 == 0)
             {
+                sentido = 0b01;
                 CCPR1L = 0;
-                CCPR2L = ADRESH;
+                CCPR2L = ADRESH/4;
             }
             else if (PORTDbits.RD1 == 0)
             {
-                CCPR1L = ADRESH;
+                sentido = 0b10;
+                CCPR1L = ADRESH/4;
                 CCPR2L = 0;
             }
             else if(PORTDbits.RD2 == 0)
             {
+                sentido = 0b00;
                 CCPR1L = 0;
                 CCPR2L = 0;
             }
@@ -2749,81 +2868,118 @@ void __attribute__((picinterrupt(("")))) isr(void){
         }
         else if (ADCON0bits.CHS == 2)
         {
-            M = ADRESH;
+            M1 = ADRESH;
             ADCON0bits.CHS = 3;
-            if(M<=50)
+            if(M1<=50)
             {
                servo2();
             }
-            if((M<=101)&&(M>=51))
+            if((M1<=101)&&(M1>=51))
             {
                servo2_2();
             }
-            if((M<=152)&&(M>=102))
+            if((M1<=152)&&(M1>=102))
             {
                servo2_3();
             }
-            if((M<=203)&&(M>=153))
+            if((M1<=203)&&(M1>=153))
             {
                servo2_4();
             }
-            if(M>=204)
+            if(M1>=204)
             {
                servo2_5();
             }
         }
         else if (ADCON0bits.CHS == 3)
         {
-            M = ADRESH;
+            M2 = ADRESH;
             ADCON0bits.CHS = 4;
-            if(M<=50)
+            if(M2<=50)
             {
                servo3();
             }
-            if((M<=101)&&(M>=51))
+            if((M2<=101)&&(M2>=51))
             {
                servo3_2();
             }
-            if((M<=152)&&(M>=102))
+            if((M2<=152)&&(M2>=102))
             {
                servo3_3();
             }
-            if((M<=203)&&(M>=153))
+            if((M2<=203)&&(M2>=153))
             {
                servo3_4();
             }
-            if(M>=204)
+            if(M2>=204)
             {
                servo3_5();
             }
         }
         else if (ADCON0bits.CHS == 4)
         {
-            M = ADRESH;
+            M3 = ADRESH;
             ADCON0bits.CHS = 0;
-            if(M<=50)
+            if(M3<=50)
             {
                servo4();
             }
-            if((M<=101)&&(M>=51))
+            if((M3<=101)&&(M3>=51))
             {
                servo4_2();
             }
-            if((M<=152)&&(M>=102))
+            if((M3<=152)&&(M3>=102))
             {
                servo4_3();
             }
-            if((M<=203)&&(M>=153))
+            if((M3<=203)&&(M3>=153))
             {
                servo4_4();
             }
-            if(M>=204)
+            if(M3>=204)
             {
                servo4_5();
             }
         }
         _delay((unsigned long)((50)*(8000000/4000000.0)));
         PIR1bits.ADIF = 0;
+    }
+    if (RBIF == 1)
+    {
+        if (PORTBbits.RB4 == 0)
+        {
+            RE0 = 1;
+            escribir_eeprom(M, 0x14);
+            escribir_eeprom(M1, 0x15);
+            escribir_eeprom(M2, 0x16);
+            escribir_eeprom(M3, 0x17);
+            escribir_eeprom(sentido, 0x18);
+            _delay((unsigned long)((1000)*(8000000/4000.0)));
+            RE0 = 0;
+        }
+        if (PORTBbits.RB5 == 0)
+        {
+            RE1 = 1;
+            M4 = leer_eeprom(0x14);
+            M5 = leer_eeprom(0x15);
+            M6 = leer_eeprom(0x16);
+            M7 = leer_eeprom(0x17);
+            sentido2 = leer_eeprom(0x18);
+            nuevo_bit_banging();
+            _delay((unsigned long)((1000)*(8000000/4000.0)));
+            RE1 = 0;
+        }
+        if (PORTBbits.RB6 == 0)
+        {
+            RE2 = 1;
+            uart = 1;
+            while (uart == 1)
+            {
+            menu();
+            }
+            RE2 = 0;
+        }
+        INTCONbits.RBIF = 0;
     }
 }
 
@@ -2836,7 +2992,7 @@ void main(void) {
 
     while (1)
     {
-            ADCON0bits.GO = 1;
+        ADCON0bits.GO = 1;
 }
 }
 
@@ -2852,13 +3008,20 @@ void setup(void){
     TRISBbits.TRISB1 = 0;
     TRISBbits.TRISB2 = 0;
     TRISBbits.TRISB3 = 0;
+    TRISBbits.TRISB4 = 1;
+    TRISBbits.TRISB5 = 1;
+    TRISBbits.TRISB6 = 1;
     TRISDbits.TRISD0 = 1;
     TRISDbits.TRISD1 = 1;
     TRISDbits.TRISD2 = 1;
+    TRISEbits.TRISE0 = 0;
+    TRISEbits.TRISE1 = 0;
+    TRISEbits.TRISE2 = 0;
 
     PORTA = 0X00;
     PORTD = 0X00;
     PORTB = 0X00;
+    PORTE = 0X00;
     PORTC = 0X00;
 
 
@@ -2866,7 +3029,17 @@ void setup(void){
     OSCCONbits.IRCF1 = 1;
     OSCCONbits.IRCF0 = 1;
     OSCCONbits.SCS = 1;
-# 256 "pro2.c"
+
+
+
+    OPTION_REGbits.nRBPU = 0;
+    WPUB = 0b01110000;
+    IOCBbits.IOCB4 = 1;
+    IOCBbits.IOCB5 = 1;
+    IOCBbits.IOCB6 = 1;
+
+
+
     ADCON0bits.CHS = 0;
 
     ADCON0bits.ADCS1 = 1;
@@ -2903,10 +3076,27 @@ void setup(void){
     TRISCbits.TRISC1 = 0;
 
 
+    TXSTAbits.BRGH = 1;
+    BAUDCTLbits.BRG16 = 1;
+
+    TXSTAbits.SYNC = 0;
+    RCSTAbits.SPEN = 1;
+    RCSTAbits.CREN = 1;
+
+    TXSTAbits.TXEN = 1;
+
+    RCSTAbits.RX9 = 0;
+
+    SPBRG = 207;
+    SPBRGH = 0;
+
+
     INTCONbits.GIE = 1;
     PIR1bits.ADIF = 0;
     PIE1bits.ADIE = 1;
     INTCONbits.PEIE = 1;
+    INTCONbits.RBIF = 1;
+    INTCONbits.RBIE = 1;
 }
 
 void servo1(void)
@@ -2942,7 +3132,7 @@ void servo1_5(void)
             PORTBbits.RB0 = 1;
             _delay((unsigned long)((2)*(8000000/4000.0)));
             PORTBbits.RB0 = 0;
-            _delay((unsigned long)((17)*(8000000/4000.0)));
+            _delay((unsigned long)((18)*(8000000/4000.0)));
 }
 
 void servo2(void)
@@ -2978,7 +3168,7 @@ void servo2_5(void)
             PORTBbits.RB1 = 1;
             _delay((unsigned long)((2)*(8000000/4000.0)));
             PORTBbits.RB1 = 0;
-            _delay((unsigned long)((17)*(8000000/4000.0)));
+            _delay((unsigned long)((18)*(8000000/4000.0)));
 }
 
 void servo3(void)
@@ -3014,7 +3204,7 @@ void servo3_5(void)
             PORTBbits.RB2 = 1;
             _delay((unsigned long)((2)*(8000000/4000.0)));
             PORTBbits.RB2 = 0;
-            _delay((unsigned long)((17)*(8000000/4000.0)));
+            _delay((unsigned long)((18)*(8000000/4000.0)));
 }
 
 void servo4(void)
@@ -3050,5 +3240,258 @@ void servo4_5(void)
             PORTBbits.RB3 = 1;
             _delay((unsigned long)((2)*(8000000/4000.0)));
             PORTBbits.RB3 = 0;
-            _delay((unsigned long)((17)*(8000000/4000.0)));
+            _delay((unsigned long)((18)*(8000000/4000.0)));
+}
+char leer_eeprom(char direccion)
+{
+    EEADR = direccion;
+    EECON1bits.EEPGD = 0;
+    EECON1bits.RD = 1;
+    char data = EEDATA;
+    return data;
+}
+void escribir_eeprom(char data, char direccion)
+{
+    EEADR = direccion;
+    EEDAT = data;
+
+    EECON1bits.EEPGD = 0;
+    EECON1bits.WREN = 1;
+
+    INTCONbits.GIE = 0;
+    EECON2 = 0x55;
+    EECON2 = 0xAA;
+
+    EECON1bits.WR = 1;
+
+    while(PIR2bits.EEIF == 0);
+    PIR2bits.EEIF = 0;
+
+    EECON1bits.WREN = 0;
+    INTCONbits.GIE = 0;
+}
+void nuevo_bit_banging(void)
+{
+    if(M4<=50)
+    {
+     servo1();
+    }
+    if((M4<=101)&&(M4>=51))
+    {
+     servo1_2();
+    }
+    if((M4<=152)&&(M4>=102))
+    {
+     servo1_3();
+    }
+    if((M4<=203)&&(M4>=153))
+    {
+     servo1_4();
+    }
+    if(M4>=204)
+    {
+     servo1_5();
+    }
+
+
+    if(M5<=50)
+    {
+     servo2();
+    }
+    if((M5<=101)&&(M5>=51))
+    {
+     servo2_2();
+    }
+    if((M5<=152)&&(M5>=102))
+    {
+     servo2_3();
+    }
+    if((M5<=203)&&(M5>=153))
+    {
+     servo2_4();
+    }
+    if(M5>=204)
+    {
+     servo2_5();
+    }
+
+    if(M6<=50)
+    {
+     servo3();
+    }
+    if((M6<=101)&&(M6>=51))
+    {
+     servo3_2();
+    }
+    if((M6<=152)&&(M6>=102))
+    {
+     servo3_3();
+    }
+    if((M6<=203)&&(M6>=153))
+    {
+     servo3_4();
+    }
+    if(M6>=204)
+    {
+     servo3_5();
+    }
+
+
+    if(M7<=50)
+    {
+     servo4();
+    }
+    if((M7<=101)&&(M7>=51))
+    {
+     servo4_2();
+    }
+    if((M7<=152)&&(M7>=102))
+    {
+     servo4_3();
+    }
+    if((M7<=203)&&(M7>=153))
+    {
+     servo4_4();
+    }
+    if(M7>=204)
+    {
+     servo4_5();
+    }
+
+
+    if(sentido2 == 0b01)
+    {
+     CCPR1L = 0;
+     CCPR2L = ADRESH;
+    }
+    if(sentido2 == 0b10)
+    {
+     CCPR1L = ADRESH;
+     CCPR2L = 0;
+    }
+    if(sentido2 == 0b10)
+    {
+     CCPR1L = 0;
+     CCPR2L = 0;
+    }
+}
+
+void menu(void){
+     _delay((unsigned long)((50)*(8000000/4000.0)));
+     printf("\rQue accion desea ejecutar? \r");
+     _delay((unsigned long)((50)*(8000000/4000.0)));
+     printf("\r(1) MOVER OJOS \r");
+     _delay((unsigned long)((50)*(8000000/4000.0)));
+     printf("(2) MOVER CEJAS \r");
+     _delay((unsigned long)((50)*(8000000/4000.0)));
+     printf("(3) MOVER LENGUA \r");
+     _delay((unsigned long)((50)*(8000000/4000.0)));
+     printf("(4) Salir de UART \r");
+     while(RCIF == 0);
+
+
+     if (RCREG == '1'){
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("\r(a) Mover ojos a la izquierda. \r");
+
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("(b) Mover ojos a la derecha. \r");
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("(c) Mover ojos para arriba. \r");
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("(d) Mover ojos para abajo. \r");
+        while(RCIF == 0);
+        if (RCREG == 'a')
+        {
+            servo2();
+        }
+        else if (RCREG == 'b')
+        {
+            servo2_5();
+        }
+        else if (RCREG == 'c')
+        {
+            servo1();
+        }
+        else if (RCREG == 'd')
+        {
+            servo1_5();
+        }
+    }
+    if (RCREG == '2'){
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("\r(e) Mover ceja 1. \r");
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("(f) Mover ceja 2. \r");
+        while(RCIF == 0);
+
+        if (RCREG == 'e')
+        {
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("\r(6) Mover ceja para arriba. \r");
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("(7) Mover ceja para abajo. \r");
+        while(RCIF == 0);
+        if(RCREG == '6')
+        {
+            servo3();
+        }
+        if(RCREG == '7')
+        {
+            servo3_5();
+        }
+        }
+        else if (RCREG == 'f')
+        {
+            _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("\r(8) Mover ceja para arriba. \r");
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("(9) Mover ceja para abajo. \r");
+        while(RCIF == 0);
+        if(RCREG == '8')
+        {
+            servo4();
+        }
+        if(RCREG == '9')
+        {
+            servo4_5();
+        }
+        }
+    }
+    if (RCREG == '3'){
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("\r(g) Desenrrollar. \r");
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("(h) Enrrollar. \r");
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+        printf("(i) Deter. \r");
+        while(RCIF == 0);
+
+        if (RCREG == 'g')
+        {
+            CCPR1L = 0;
+            CCPR2L = ADRESH;
+        }
+        else if (RCREG == 'h')
+        {
+            CCPR1L = ADRESH;
+            CCPR2L = 0;
+        }
+        else if (RCREG == 'i')
+        {
+            CCPR1L = 0;
+            CCPR2L = 0;
+        }
+    }
+    if (RCREG == '4'){
+        uart = 0;
+        printf("\rHa salido del UART \r");
+        _delay((unsigned long)((50)*(8000000/4000.0)));
+    }
+}
+void putch(char info){
+
+    while (TXIF == 0);
+    TXREG = info;
+
 }
